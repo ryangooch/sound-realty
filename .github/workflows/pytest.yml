@@ -12,6 +12,7 @@ jobs:
     - name: Build Docker container
       run: docker build -t app .
 
-    - name: Run tests using pytest within the Docker container
-      run: docker run app pytest
-
+    - name: UnitTest with pytest
+      run: |
+        docker-compose up -d
+        docker-compose exec -T app pytest
