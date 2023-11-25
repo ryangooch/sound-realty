@@ -1,0 +1,17 @@
+name: Docker Build and Pytest
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2 
+
+    - name: Build Docker container
+      run: docker build -t sound-realty .
+
+    - name: Run tests using pytest within the Docker container
+      run: docker run sound-realty pytest
+
