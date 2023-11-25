@@ -12,7 +12,8 @@ jobs:
     - name: Build Docker container
       run: docker build -t app .
 
-    - name: UnitTest with pytest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Test with pytest
       run: |
-        docker-compose up -d
-        docker-compose exec -T app pytest
+          docker run app pytest
