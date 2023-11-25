@@ -4,11 +4,10 @@
 import pickle
 from datetime import datetime
 from pathlib import Path
-from typing import Dict
 
 import numpy as np
 import pandas as pd
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
 
 
 app = Flask(__name__)
