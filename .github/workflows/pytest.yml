@@ -10,8 +10,8 @@ jobs:
       uses: actions/checkout@v2 
 
     - name: Build Docker container
-      run: docker build -t sound-realty .
+      run: docker build .
 
     - name: Run tests using pytest within the Docker container
-      run: docker run sound-realty pytest
+      run: docker run pytest
 
