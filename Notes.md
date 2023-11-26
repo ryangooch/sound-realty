@@ -10,3 +10,14 @@ predictions via the REST interface.
 However, we also need to do a little data science/model tuning, so I'm going to add some standard
 data science stack libraries and include a directory for a notebook, for visualization and workflow
 preservation.
+- It would be possible to allow JSON files containing more than one sample at a time.
+This was apparently outside of spec, however, so I chose to only allow one sample.
+- Model caching could be done more efficiently; ideally perhaps, each model would be in its own
+service, cached and available at need.
+- Similarly, we should extract the data processing logic from the REST service if things get much
+more complicated. Not that this implementation is complicated at all, but sequestering those
+functions can make applications more easily maintainable and less complex.
+- It is useful to include date information in the model; unfortunately, the test data does not
+include date information. So instead we use an assumption that the goal is to find housing prices
+today, though really what makes sense for this data is probably to use the last date seen in the
+training data, since those dates are from 2014-15.

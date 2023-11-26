@@ -53,5 +53,13 @@ The LightGBM model improves upon the KNN method above in terms of mean absolute 
 (MAPE) performance, with respect to the KNN technique.
 It can be called as above, by simply changing the endpoint.
 
+## Model Training
+Please refer to the Jupyter Notebook in [model_training.ipynb](notebooks/model_training.ipynb) for
+more information on how the LightGBM model is trained.
+It should be noted that this notebook was hosted and trained in a different environment than the
+Docker container for the overall repo.
+So if you wish to run that code, you will need to install additional dependencies, or stand up a
+local virtual environment.
+
 ## Notes on Implementation
 Refer to [Notes.md](Notes.md) for more information.
