@@ -4,10 +4,13 @@
 import pickle
 from datetime import datetime
 from pathlib import Path
+from typing import Dict
 
 import numpy as np
 import pandas as pd
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
+from lightgbm import LGBMRegressor
+from sklearn.pipeline import Pipeline
 
 
 app = Flask(__name__)
@@ -27,10 +30,10 @@ INITIAL_MODEL_COLUMNS = [
 
 # load models here to avoid loading them on every request
 with open(MODEL_PATH, "rb") as fil:
-    KNN_MODEL = pickle.load(fil)
+    KNN_MODEL: Pipeline = pickle.load(fil)
 
 with open(LGBM_MODEL_PATH, "rb") as fil:
-    LGBM_MODEL = pickle.load(fil)
+    LGBM_MODEL: LGBMRegressor = pickle.load(fil)
 
 # load the demographics data here to avoid loading it on every request
 ZIPCODE_DEMOGRAPHICS = pd.read_csv(ZIPCODE_DEMOGRAPHICS_PATH)
@@ -38,35 +41,7 @@ ZIPCODE_DEMOGRAPHICS = pd.read_csv(ZIPCODE_DEMOGRAPHICS_PATH)
 
 @app.route("/")
 def index():
-    website_str = """
-    <h1>Home Sales Price Predictor</h1>
-    <p>This app serves a model trained on home sales data via a RESTful API.</p>
-    <p>Use the <code>/predict</code> endpoint to make a prediction.</p>
-    <p>Example:</p>
-    <pre>
-    curl -X POST -H "Content-Type: application/json" \\
-        -d '{"bedrooms": 3, "bathrooms": 2, "sqft_living": 2000, "sqft_lot": 5000, \\
-            "floors": 1, "waterfront": 0, "view": 0, "condition": 3, "grade": 7, \\
-            "sqft_above": 2000, "sqft_basement": 0, "yr_built": 1990, \\
-            "yr_renovated": 0, "zipcode": "98115", "lat": 47.6809, "long": -122.285, \\
-            "sqft_living15": 2000, "sqft_lot15": 5000}' \\
-        http://localhost:5000/predict
-    </pre>
-
-    <p>Or use the <code>/predict_lgbm</code> endpoint to make a prediction using a
-    LightGBM model.</p>
-    <p>Example:</p>
-    <pre>
-    curl -X POST -H "Content-Type: application/json" \\
-        -d '{"bedrooms": 3, "bathrooms": 2, "sqft_living": 2000, "sqft_lot": 5000, \\
-            "floors": 1, "waterfront": 0, "view": 0, "condition": 3, "grade": 7, \\
-            "sqft_above": 2000, "sqft_basement": 0, "yr_built": 1990, \\
-            "yr_renovated": 0, "zipcode": "98115", "lat": 47.6809, "long": -122.285, \\
-            "sqft_living15": 2000, "sqft_lot15": 5000}' \\
-        http://localhost:5000/predict_lgbm
-    </pre>
-    """
-    return website_str
+    return render_template("index.html")
 
 
 @app.route("/predict", methods=["POST"])
@@ -97,12 +72,12 @@ def predict():
     The output columns we return are:
     - price
     """
-    data = request.get_json(force=True)
+    data: Dict = request.get_json(force=True)
 
     # Load the model
-    model = KNN_MODEL
+    model: Pipeline = KNN_MODEL
 
-    demographics = ZIPCODE_DEMOGRAPHICS
+    demographics: pd.DataFrame = ZIPCODE_DEMOGRAPHICS
 
     # Convert the JSON object into a dataframe
     df = pd.DataFrame(data, index=[0])  # passing only scalar values, needs index
@@ -114,7 +89,9 @@ def predict():
     df = df.merge(demographics, how="left", on="zipcode").drop(columns="zipcode")
 
     # Make the prediction
-    prediction = model.predict(df)[0]  # model.predict() returns a numpy array, so we select the
+    prediction: float = model.predict(df)[
+        0
+    ]  # model.predict() returns a numpy array, so we select the
     # first element to get the scalar value we want
 
     # Return the prediction as JSON
@@ -123,11 +100,11 @@ def predict():
 
 @app.route("/predict_lgbm", methods=["POST"])
 def predict_lgbm():
-    data = request.get_json(force=True)
+    data: Dict = request.get_json(force=True)
 
-    model = LGBM_MODEL
+    model: LGBMRegressor = LGBM_MODEL
 
-    demographics = ZIPCODE_DEMOGRAPHICS
+    demographics: pd.DataFrame = ZIPCODE_DEMOGRAPHICS
 
     df = pd.DataFrame(data, index=[0])
 
@@ -147,7 +124,7 @@ def predict_lgbm():
     df = df.drop(columns=dropcols, axis=1)
 
     # model was trained on log-transformed target
-    prediction = np.exp(model.predict(df)[0])
+    prediction: float = np.exp(model.predict(df)[0])
 
     return jsonify({"prediction": prediction})
 

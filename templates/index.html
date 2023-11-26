@@ -1,0 +1,26 @@
+<h1>Home Sales Price Predictor</h1>
+<p>This app serves a model trained on home sales data via a RESTful API.</p>
+<p>Use the <code>/predict</code> endpoint to make a prediction.</p>
+<p>Example:</p>
+<pre>
+curl -X POST -H "Content-Type: application/json" \\
+    -d '{"bedrooms": 3, "bathrooms": 2, "sqft_living": 2000, "sqft_lot": 5000, \\
+        "floors": 1, "waterfront": 0, "view": 0, "condition": 3, "grade": 7, \\
+        "sqft_above": 2000, "sqft_basement": 0, "yr_built": 1990, \\
+        "yr_renovated": 0, "zipcode": "98115", "lat": 47.6809, "long": -122.285, \\
+        "sqft_living15": 2000, "sqft_lot15": 5000}' \\
+    http://localhost:5000/predict
+</pre>
+
+<p>Or use the <code>/predict_lgbm</code> endpoint to make a prediction using a
+LightGBM model.</p>
+<p>Example:</p>
+<pre>
+curl -X POST -H "Content-Type: application/json" \\
+    -d '{"bedrooms": 3, "bathrooms": 2, "sqft_living": 2000, "sqft_lot": 5000, \\
+        "floors": 1, "waterfront": 0, "view": 0, "condition": 3, "grade": 7, \\
+        "sqft_above": 2000, "sqft_basement": 0, "yr_built": 1990, \\
+        "yr_renovated": 0, "zipcode": "98115", "lat": 47.6809, "long": -122.285, \\
+        "sqft_living15": 2000, "sqft_lot15": 5000}' \\
+    http://localhost:5000/predict_lgbm
+</pre>
