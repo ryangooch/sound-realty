@@ -32,6 +32,9 @@ with open(MODEL_PATH, "rb") as fil:
 with open(LGBM_MODEL_PATH, "rb") as fil:
     LGBM_MODEL = pickle.load(fil)
 
+# load the demographics data here to avoid loading it on every request
+ZIPCODE_DEMOGRAPHICS = pd.read_csv(ZIPCODE_DEMOGRAPHICS_PATH)
+
 
 @app.route("/")
 def index():
@@ -99,8 +102,7 @@ def predict():
     # Load the model
     model = KNN_MODEL
 
-    # Load the demographics data
-    demographics = pd.read_csv(ZIPCODE_DEMOGRAPHICS_PATH)
+    demographics = ZIPCODE_DEMOGRAPHICS
 
     # Convert the JSON object into a dataframe
     df = pd.DataFrame(data, index=[0])  # passing only scalar values, needs index
@@ -125,7 +127,7 @@ def predict_lgbm():
 
     model = LGBM_MODEL
 
-    demographics = pd.read_csv(ZIPCODE_DEMOGRAPHICS_PATH)
+    demographics = ZIPCODE_DEMOGRAPHICS
 
     df = pd.DataFrame(data, index=[0])
 
