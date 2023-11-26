@@ -25,17 +25,12 @@ INITIAL_MODEL_COLUMNS = [
     "zipcode",
 ]
 
+# load models here to avoid loading them on every request
+with open(MODEL_PATH, "rb") as fil:
+    KNN_MODEL = pickle.load(fil)
 
-def load_model():
-    with open(MODEL_PATH, "rb") as fil:
-        model = pickle.load(fil)
-    return model
-
-
-def load_lightgbm_model():
-    with open(LGBM_MODEL_PATH, "rb") as fil:
-        model = pickle.load(fil)
-    return model
+with open(LGBM_MODEL_PATH, "rb") as fil:
+    LGBM_MODEL = pickle.load(fil)
 
 
 @app.route("/")
@@ -102,7 +97,7 @@ def predict():
     data = request.get_json(force=True)
 
     # Load the model
-    model = load_model()
+    model = KNN_MODEL
 
     # Load the demographics data
     demographics = pd.read_csv(ZIPCODE_DEMOGRAPHICS_PATH)
@@ -128,7 +123,7 @@ def predict():
 def predict_lgbm():
     data = request.get_json(force=True)
 
-    model = load_lightgbm_model()
+    model = LGBM_MODEL
 
     demographics = pd.read_csv(ZIPCODE_DEMOGRAPHICS_PATH)
 
