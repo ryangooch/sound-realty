@@ -21,3 +21,5 @@ functions can make applications more easily maintainable and less complex.
 include date information. So instead we use an assumption that the goal is to find housing prices
 today, though really what makes sense for this data is probably to use the last date seen in the
 training data, since those dates are from 2014-15.
+- Locally, I'm using `ruff` to provide type-checking and linting support. I also use Black on save
+to format code. I prefer a wide coding canvas, so I have set the column width to 100 characters.
